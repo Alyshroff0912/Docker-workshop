@@ -9,6 +9,7 @@ from sys import prefix
 import pandas as pd
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
+import click
 
 
 dtype = {
@@ -38,18 +39,17 @@ parse_dates = [
 
 #df.head(n=0).to_sql(name='yellow_taxi_data', con=engine, if_exists='replace')
 
-def run():
-    pguser = 'root'
-    pgpassword = 'root'
-    pghost = 'localhost'
-    pg_port = '5432'
-    pg_db = 'ny_taxi'
- 
-    year = 2021
-    month = 1
-
-    target_table = 'yellow_taxi_data'
-    chunksize = 100000
+@click.option('--pguser', default='root', help='PostgreSQL username')
+@click.option('--pgpassword', default='root', help='PostgreSQL password')
+@click.option('--pghost', default='localhost', help='PostgreSQL host')
+@click.option('--pg-port', default='5432', help='PostgreSQL port')
+@click.option('--pg-db', default='ny_taxi', help='PostgreSQL database')
+@click.option('--year', type=int, default=2021, help='Year for data')
+@click.option('--month', type=int, default=1, help='Month for data')
+@click.option('--target-table', default='yellow_taxi_data', help='Target table name')
+@click.option('--chunksize', type=int, default=100000, help='Chunk size for reading CSV')
+@click.command()
+def run(pguser, pgpassword, pghost, pg_port, pg_db, year, month, target_table, chunksize):
     
     prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow'
     url = f'{prefix}/yellow_tripdata_{year}-{month:02d}.csv.gz'
